@@ -1,0 +1,23 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-techtalk
+  namespace: techtalk
+  labels:
+    app: nginx-techtalk
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nginx-techtalk
+  template:
+    metadata:
+      labels:
+        app: nginx-techtalk
+    spec:
+      containers:
+      - name: nginx-techtalk
+        image: nginx:1.21.6
+        ports:
+        - containerPort: 80
+        - containerPort: 443

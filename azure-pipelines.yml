@@ -1,0 +1,92 @@
+# Starter pipeline
+# Start with a minimal pipeline that you can customize to build and deploy your code.
+# Add steps that build, run tests, deploy, and more:
+# https://aka.ms/yaml
+
+trigger:
+- main
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+stages:
+- stage: Build
+  jobs:
+  - job: Build
+    variables: 
+    - group: tech-talk
+    steps:
+    - checkout: self 
+      clean: true
+      persistCredentials: true
+
+    - task: CmdLine@2
+      displayName: Docker Login
+      inputs:
+        script: |
+          docker login -u leonardosimoura -p $(gitlab_password) registry.gitlab.com
+
+    - task: CmdLine@2
+      displayName: Docker PreRequisites
+      inputs:
+        script: |
+            docker run --privileged --rm tonistiigi/binfmt --install all
+
+    - task: CmdLine@2
+      displayName: "Docker Buildx Setup"
+      inputs:
+        script: 'docker buildx create --use'
+   
+    - task: CmdLine@2
+      displayName: "Docker Build and Push Meu App"
+      inputs:
+        script: 'docker buildx build --push --platform linux/arm64/v8,linux/amd64 --file Dockerfile  --no-cache --tag registry.gitlab.com/leonardosimoura-pessoal/techtalk/meu-app:$(Build.BuildNumber) .'  
+        
+- stage: Release
+  dependsOn: Build
+  condition: succeeded('Build')
+  jobs:
+    - deployment: Release
+      environment: Release
+      strategy:
+        runOnce:
+          deploy:
+            steps:
+            - checkout: self 
+              clean: true
+              persistCredentials: true
+
+            - task: CmdLine@2
+              displayName: "Git config"
+              inputs:
+                script: | 
+                  git config --global user.email "leonardosimoura@gmail.com"
+                  git config --global user.name "Leonardo Moura"
+              
+            - task: CmdLine@2
+              displayName: "Git swtich to release"
+              inputs:
+                script: 'git checkout release/1.0'
+                workingDirectory: $(Build.Repository.LocalPath)
+
+            - task: CmdLine@2
+              displayName: "Git replace files"
+              inputs:
+                script: 'envsubst < "$(Build.Repository.LocalPath)/base/1.deployment.yml" > "$(Build.Repository.LocalPath)/git-ops/1.deployment.yml"'
+              
+            - task: CmdLine@2
+              displayName: "Git add"
+              inputs:
+                script: 'git add GitOps/\*.yml'
+                workingDirectory: $(Build.Repository.LocalPath)
+                
+            - task: CmdLine@2
+              displayName: "Git commit"
+              inputs:
+                script: "git commit -m 'Release $(Build.BuildNumber)'"
+                workingDirectory: $(Build.Repository.LocalPath)
+            - task: CmdLine@2
+              displayName: "Git push to release $(Build.BuildNumber)"
+              inputs:
+                script: 'git push'
+                workingDirectory: $(Build.Repository.LocalPath)
