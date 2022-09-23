@@ -64,9 +64,9 @@ stages:
                   git config --global user.name "Leonardo Moura"
               
             - task: CmdLine@2
-              displayName: "Git swtich to release"
+              displayName: "Git checkout release"
               inputs:
-                script: 'git checkout release/1.0'
+                script: 'git checkout -B release/1.0'
                 workingDirectory: $(Build.Repository.LocalPath)
 
             - task: CmdLine@2
