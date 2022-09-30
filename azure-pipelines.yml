@@ -24,7 +24,7 @@ stages:
       displayName: Docker Login
       inputs:
         script: |
-          docker login -u leonardosimoura -p $(gitlab_password) registry.gitlab.com
+          docker login -u $(gitlab_user) -p $(gitlab_password) registry.gitlab.com
 
     - task: CmdLine@2
       displayName: Docker PreRequisites
@@ -60,13 +60,13 @@ stages:
               displayName: "Git config"
               inputs:
                 script: | 
-                  git config --global user.email "leonardosimoura@gmail.com"
-                  git config --global user.name "Leonardo Moura"
+                  git config --global user.email "$(git_email)"
+                  git config --global user.name "$(git_name)"
               
             - task: CmdLine@2
-              displayName: "Git swtich to release"
+              displayName: "Git checkout release"
               inputs:
-                script: 'git checkout release/1.0'
+                script: 'git checkout -B release/1.0'
                 workingDirectory: $(Build.Repository.LocalPath)
 
             - task: CmdLine@2
