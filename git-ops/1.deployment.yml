@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
       - name: nginx-techtalk
-        image: registry.gitlab.com/leonardosimoura-pessoal/techtalk/meu-app:20220930.14
+        image: registry.gitlab.com/leonardosimoura-pessoal/techtalk/meu-app:20220930.22
         ports:
         - containerPort: 80
         - containerPort: 443
