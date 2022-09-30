@@ -9,6 +9,11 @@ trigger:
 pool:
   vmImage: 'ubuntu-latest'
 
+trigger:
+    paths:
+      exclude:
+        - git-ops/*
+
 stages:
 - stage: Build
   jobs:
@@ -62,21 +67,6 @@ stages:
                 script: | 
                   git config --global user.email "$(git_email)"
                   git config --global user.name "$(git_name)"
-              
-            - task: CmdLine@2
-              displayName: "Git checkout release"
-              inputs:
-                script: | 
-                  git fetch
-                  git checkout release/1.0
-                workingDirectory: $(Build.Repository.LocalPath)
-            
-            - task: CmdLine@2
-              displayName: "Git merge from main"
-              inputs:
-                script: | 
-                  git merge origin/main
-                workingDirectory: $(Build.Repository.LocalPath)
 
             - task: CmdLine@2
               displayName: "Git replace files"
