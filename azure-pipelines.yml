@@ -69,6 +69,7 @@ stages:
                 script: | 
                   git fetch
                   git checkout release/1.0
+                  git merge main
                 workingDirectory: $(Build.Repository.LocalPath)
 
             - task: CmdLine@2
