@@ -79,7 +79,7 @@ stages:
             - task: CmdLine@2
               displayName: "Git add"
               inputs:
-                script: 'git add GitOps/\*.yml'
+                script: 'git add git-ops/\*.yml'
                 workingDirectory: $(Build.Repository.LocalPath)
                 
             - task: CmdLine@2
