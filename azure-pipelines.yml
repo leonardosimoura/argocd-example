@@ -4,15 +4,15 @@
 # https://aka.ms/yaml
 
 trigger:
-- main
+  branches:
+    include:
+    - main
+  paths:
+    exclude:
+      - git-ops/*
 
 pool:
   vmImage: 'ubuntu-latest'
-
-trigger:
-    paths:
-      exclude:
-        - git-ops/*
 
 stages:
 - stage: Build
