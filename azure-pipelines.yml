@@ -69,6 +69,12 @@ stages:
                   git config --global user.name "$(git_name)"
 
             - task: CmdLine@2
+              displayName: "Git checkout main"
+              inputs:
+                script: | 
+                  git checkout main
+
+            - task: CmdLine@2
               displayName: "Git replace files"
               inputs:
                 script: 'envsubst < "$(Build.Repository.LocalPath)/base/1.deployment.yml" > "$(Build.Repository.LocalPath)/git-ops/1.deployment.yml"'
